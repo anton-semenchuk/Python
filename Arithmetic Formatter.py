@@ -1,77 +1,47 @@
-def error_handler(problem):
-    len_of_operand = 0
-
-    for char in problem:
-        if char == '*' or char == '/':
-            print("Error: Operator must be '+' or '-'.")
-
-        if char == '+' or char == '-' or char == ' ' or str.isdigit(char):
-            pass
-        else:
-            print('Error: Numbers must only contain digits.')
-            
-        if str.isdigit(char):
-            len_of_operand += 1
-            if len_of_operand > 4:
-                print('Error: Numbers cannot be more than four digits.')
-        else:
-            len_of_operand = 0
-
-def seporator(length):
-    result = '--'
-    for _ in range(length):
-        result += '-'
-    return result
-
-def problem_arranger(problem, show_answers):
-    operand1 = 0
-    operand2 = 0
-    answer = 0
-    sign = ''
-    longest_operand = 0
-    len_operand1 = 0
-    len_operand2 = 0
-
-    for char in problem:
-        if char == '-' or char == '+':
-            sign = char
-
-    operands = problem.split(' ' + sign + ' ')
-    operand1 = int(operands[0])
-    operand2 = int(operands[1])
-
-    answer = operand1 + operand2 if sign == '+' else operand1 - operand2
-
-    # вычисление длиннейщего операнда
-    len_operand1 = len(str(operand1))
-    len_operand2 = len(str(operand2))
-    longest_operand = len_operand1 if len_operand1 > len_operand2 else len_operand2
-
-    # return
-    if show_answers:
-        return f'{operand1:>{longest_operand + 2}}\n{sign} {operand2:>{longest_operand}}\n{seporator(longest_operand)}\n{answer:>{longest_operand + 2}}'
-    else:
-        return f'{operand1:>{longest_operand + 2}}\n{sign} {operand2:>{longest_operand}}\n{seporator(longest_operand)}'
-
 def arithmetic_arranger(problems, show_answers=False):
-    result = []
-
     if len(problems) > 5:
-        print('Error: Too many problems.')
+        return 'Error: Too many problems.'
+
+    char_top = []
+    char_bottom = []
+    char_line = []
+    char_answers = []
 
     for problem in problems:
+        parts = problem.split()
+        operand1 = parts[0]
+        operator = parts[1]
+        operand2 = parts[2]
 
         # обработка ошибок
-        error_handler(problem)
+        try:
+            answer = str(eval(problem))
+        except:
+            return 'Error: Numbers must only contain digits.'
+        if operator not in ['+', '-']:
+            return "Error: Operator must be '+' or '-'."
+        if len(operand1) > 4 or len(operand2) > 4:
+            return 'Error: Numbers cannot be more than four digits.'
 
         # решение
-        result.append(problem_arranger(problem, show_answers))
+        max_length = max(len(operand1), len(operand2)) + 2
+        char_top.append(operand1.rjust(max_length))
+        char_bottom.append(operator + ' ' + operand2.rjust(max_length - 2))
+        char_line.append('-' * max_length)
+        char_answers.append(answer.rjust(max_length))
 
-    # output
-    for i, problem in enumerate(result):
-        result[i] += '    '
-    result[len(result) - 1] = result[len(result) - 1].strip()
-
-    return result
-
-print(f'\n{arithmetic_arranger(["32 + 698", "3801 - 2", "45 + 43", "123 + 49"])}')
+    arranged_problems = ""
+    if char_top:
+        arranged_problems += "    ".join(char_top) + '\n'
+    if char_bottom:
+        arranged_problems += "    ".join(char_bottom) + '\n'
+    if char_line:
+        arranged_problems += "    ".join(char_line)
+    if show_answers:
+        if char_answers:
+            arranged_problems += '\n' + "    ".join(char_answers)
+    return arranged_problems
+    
+print(f'\n{arithmetic_arranger(["3801 - 2", "123 + 49"])}')
+print(f'\n{arithmetic_arranger(["32 + 698", "3801 - 2", "45 + 43", "123 + 49"],True)}')
+print(f'\n{arithmetic_arranger(["24 + 85215", "3801 - 2", "45 + 43", "123 + 49"])}')
