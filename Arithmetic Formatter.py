@@ -15,7 +15,7 @@ def arithmetic_arranger(problems, show_answers=False):
         operator = parts[1]
         operand2 = parts[2]
 
-        #error handling
+        #error handling 
         try:
             answer = str(eval(problem))
         except:
